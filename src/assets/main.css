@@ -1,0 +1,29 @@
+.bg-washed-red {
+  background-color: #FFDFDF;
+}
+
+.bg-washed-green {
+  background-color: #E8FDF5;
+}
+
+.bg-light-yellow {
+  background-color: #FBF1A9;
+}
+
+.result-table .field.small {
+  block-size: 1.75rem;
+}
+
+.result-table .field>input,
+.result-table .field>input:focus {
+  font-size: .875rem;
+  padding: 0 .2375rem;
+}
+
+.result-table .field>input.org-name {
+  width: 425px;
+}
+
+.result-table .field>input.org-id {
+  width: 225px;
+}
