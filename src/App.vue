@@ -5,6 +5,7 @@ const defaultTestOrganisations = [
   ['Alzheimer Society', 'GB-CHC-296645'],
   ['Mind', 'GB-CHC-219830'],
   ['Voluntary Sector Studies Network', 'GB-CHC-1197827'],
+  ['VSSN', 'GB-CHC-1197827'],
   ['Friends of Lime Tree Primary Surbiton', 'GB-CHC-1186755'],
   ['James Bond Fan Club CIC', 'GB-COH-14545528'],
   ['James Bond Fan Club Community Interest Company', 'GB-COH-14545528'],
@@ -12,7 +13,11 @@ const defaultTestOrganisations = [
   ['Big Lottery Fund', 'GB-GOR-PB188'],
   ['National Lottery Community Fund', 'GB-GOR-PB188'],
   ['Royal Borough of Kingston Upon Thames', 'GB-LAE-KTT'],
-  ['Kingston Upon Thames Council', 'GB-LAE-KTT']
+  ['Kingston Upon Thames Council', 'GB-LAE-KTT'],
+  ['Lankelly Chase Foundation', 'GB-CHC-1107583'],
+  ['LankellyChase Foundation', 'GB-CHC-1107583'],
+  ['Mission 44', 'GB-CHC-1199596'],
+  ['Mission44', 'GB-CHC-1199596']
 ]
 export default {
   data() {
@@ -21,6 +26,7 @@ export default {
       testOrganisations: [...defaultTestOrganisations],
       results: [],
       loading: false,
+      error: null,
       addOrganisationName: null,
       addOrganisationId: null
     }
@@ -85,6 +91,7 @@ export default {
   methods: {
     runTests() {
       this.loading = true
+      this.error = null
       const data = new URLSearchParams()
       data.append('queries', JSON.stringify(this.queries))
       fetch(this.endpoint, {
@@ -94,6 +101,10 @@ export default {
         .then((response) => response.json())
         .then((data) => {
           this.results = data
+          this.loading = false
+        })
+        .catch((error) => {
+          this.error = error
           this.loading = false
         })
     },
@@ -147,6 +158,10 @@ export default {
       <button @click="clearSettings" class="fill">Clear settings</button>
       <span v-if="loading">Loading...</span>
     </nav>
+    <article v-if="error" class="error">
+      <h5>Error</h5>
+      <p>{{ error }}</p>
+    </article>
     <div class="medium-space"></div>
     <table class="table result-table">
       <thead>
