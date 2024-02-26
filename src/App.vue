@@ -17,7 +17,37 @@ const defaultTestOrganisations = [
   ['Lankelly Chase Foundation', 'GB-CHC-1107583'],
   ['LankellyChase Foundation', 'GB-CHC-1107583'],
   ['Mission 44', 'GB-CHC-1199596'],
-  ['Mission44', 'GB-CHC-1199596']
+  ['Mission44', 'GB-CHC-1199596'],
+  ['scottish amateur swimming association limited', 'GB-COH-SC246645'],
+  ['barnardo services limited', 'GB-COH-01227919'],
+  ['echo for extra choice in herefordshire limited', 'GB-CHC-1096449'],
+  ['wymondham abbey parochial church council', 'GB-CHC-1130495'],
+  ['community matters partnership cic', 'GB-COH-07412802'],
+  ['Community Matters Partnership C.I.C.', 'GB-COH-07412802'],
+  ['The Stylisters/Urban Short Cuts/Big Peoples Theatre', 'GB-COH-05742855'],
+  ['The Stylisters Urban Short Cuts Big Peoples Theatre', 'GB-COH-05742855'],
+  ['orkney pre school play association', 'GB-SC-SC008310'],
+  ['orkney preschool play association', 'GB-SC-SC008310'],
+  ['orkney pre-school play association', 'GB-SC-SC008310'],
+  ['east lothian womens aid', 'GB-SC-SC028150'],
+  ['bradford womens aid', 'GB-CHC-1099351'],
+  ['winter walker', 'GB-COH-11415995'],
+  ['winterwalker', 'GB-COH-11415995'],
+  ['christ church london', 'GB-CHC-1111950'],
+  ['the lewis foundation', 'GB-CHC-1166405'],
+  ['rainbow of hopeparadise run', 'GB-CHC-1088856'],
+  ['rainbow of hope/paradise run', 'GB-CHC-1088856'],
+  ['united kingdom mmbondo community', 'GB-CHC-1192751'],
+  ['under 12s project', 'GB-SC-SC02972'],
+  ['longstone school parentstaff association', 'GB-NIC-104228'],
+  ['longstone school parent/staff association', 'GB-NIC-104228'],
+  ['bedes world', 'GB-CHC-1009881'],
+  ['p r o p peoples relief of pressure', 'GB-CHC-1092363'],
+  ["Catholic Children's Society Plymouth", 'GB-CHC-282803'],
+  ['18th bromley st marys scout group', 'GB-CHC-291546'],
+  ["AfAAB - Action for Autism and Asperger's Barnsley", 'GB-CHC-1197465'],
+  ['Enable Arts', 'GB-CHC-1172345'],
+  ['scottish mental health arts film festival smhaff', 'GB-SC-SC039714']
 ]
 export default {
   data() {
@@ -73,7 +103,8 @@ export default {
             topMatchName: result[0].name,
             topMatchId: match_ids[0],
             correctMatch: match_ids[0] === expectedId,
-            inPotentialMatches: match_ids.includes(expectedId)
+            inPotentialMatches: match_ids.includes(expectedId),
+            fetched: new Date(Date.now())
           }
         } else {
           return {
@@ -82,10 +113,33 @@ export default {
             topMatchName: null,
             topMatchId: null,
             correctMatch: null,
-            inPotentialMatches: null
+            inPotentialMatches: null,
+            fetched: new Date(Date.now())
           }
         }
       })
+    },
+    aggregateResults() {
+      return this.testResults.reduce(
+        (acc, result) => {
+          if (result.correctMatch) {
+            acc.green++
+          } else if (result.inPotentialMatches) {
+            acc.orange++
+          } else {
+            acc.red++
+          }
+          return acc
+        },
+        { green: 0, orange: 0, red: 0 }
+      )
+    },
+    aggregateResultsPercentage() {
+      return {
+        green: ((this.aggregateResults.green / this.testResults.length) * 100).toFixed(1) + '%',
+        orange: ((this.aggregateResults.orange / this.testResults.length) * 100).toFixed(1) + '%',
+        red: ((this.aggregateResults.red / this.testResults.length) * 100).toFixed(1) + '%'
+      }
     }
   },
   methods: {
@@ -163,6 +217,37 @@ export default {
       <p>{{ error }}</p>
     </article>
     <div class="medium-space"></div>
+    <strong>Results:</strong>
+    <ul style="gap: 0; display: block; width: 100%">
+      <li
+        class="bg-washed-green"
+        style="overflow: hidden; display: inline-block; float: left"
+        :style="{ width: aggregateResultsPercentage.green }"
+      >
+        <span style="padding: 8px"
+          ><strong>Correct matches:</strong> {{ aggregateResults.green }}</span
+        >
+      </li>
+      <li
+        class="bg-light-yellow"
+        style="overflow: hidden; display: inline-block; float: left"
+        :style="{ width: aggregateResultsPercentage.orange }"
+      >
+        <span style="padding: 8px"
+          ><strong>Matches in potential matches:</strong> {{ aggregateResults.orange }}</span
+        >
+      </li>
+      <li
+        class="bg-washed-red"
+        style="overflow: hidden; display: inline-block; float: left"
+        :style="{ width: aggregateResultsPercentage.red }"
+      >
+        <span style="padding: 8px"
+          ><strong>Incorrect matches:</strong> {{ aggregateResults.red }}</span
+        >
+      </li>
+    </ul>
+    <div class="medium-space"></div>
     <table class="table result-table">
       <thead>
         <tr>
@@ -222,7 +307,9 @@ export default {
               />
             </div>
           </td>
-          <td class="pa2">{{ organisation.topMatchName }}</td>
+          <td class="pa2">
+            {{ organisation.topMatchName }}
+          </td>
           <td class="pa2">{{ organisation.topMatchId }}</td>
           <td class="pa2 center-align">
             <i v-if="organisation.correctMatch" class="green-text">check_circle</i>
